@@ -1,0 +1,137 @@
+﻿<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bahnhof3 Energie Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">Bahnhof3</p>
+        <h1>Mieter Energie Dashboard</h1>
+        <p class="subtitle">Mieter melden sich mit E-Mail und Passwort an.</p>
+      </header>
+
+      <section class="panel">
+        <h2>Login</h2>
+        <div class="grid three">
+          <label>
+            E-Mail
+            <input id="email" type="email" placeholder="mieter@bahnhof3.de" />
+          </label>
+          <label>
+            Passwort
+            <input id="password" type="password" placeholder="********" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="loginBtn">Anmelden</button>
+          <button id="logoutBtn" class="btn-secondary">Abmelden</button>
+          <span id="userInfo" class="status">Nicht angemeldet.</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Wohnung</h2>
+        <div class="grid three">
+          <label>
+            Wohnung (nur Admin kann umschalten)
+            <select id="apartmentSelect">
+              <option value="apt1">apt1</option>
+              <option value="apt2">apt2</option>
+              <option value="apt3">apt3</option>
+              <option value="apt4">apt4</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Jahreswerte</h2>
+        <div class="grid three">
+          <label>
+            Jahr
+            <select id="yearSelect"></select>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="loadYearBtn">Jahreswerte laden</button>
+          <span id="yearStatus" class="status">Bitte anmelden.</span>
+        </div>
+        <section class="stats" id="statsCards">
+          <article class="card"><h3>Gesamtverbrauch Strom</h3><p id="yearSumApt">-</p></article>
+          <article class="card"><h3>Netzbezug</h3><p id="yearSumNetz">-</p></article>
+          <article class="card"><h3>Strombezug Solaranlage</h3><p id="yearSumWpv">-</p></article>
+        </section>
+        <div class="table-wrap">
+          <table id="monthlyTable">
+            <thead>
+              <tr>
+                <th>Monat</th>
+                <th>Gesamtverbrauch Strom</th>
+                <th>Netzbezug</th>
+                <th>Strombezug Solaranlage</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Filter</h2>
+        <p class="subtitle filter-note">Darstellung der 15-Minuten Werte im Zeitraum.</p>
+        <div class="grid three">
+          <label>
+            Von
+            <input id="dateFrom" type="date" />
+          </label>
+          <label>
+            Bis
+            <input id="dateTo" type="date" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="loadBtn">Daten laden</button>
+          <span id="statusText" class="status">Bereit.</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Aufteilung des Stromverbrauches nach Bezugsquelle</h2>
+        <div class="mix-chart-wrap">
+          <canvas id="mixChart"></canvas>
+          <div class="mix-chart-center">
+            <span>Stromverbrauch</span>
+            <strong id="mixCenterValue">-</strong>
+          </div>
+        </div>
+        <h3>Verlauf</h3>
+        <canvas id="usageChart" height="90"></canvas>
+        <div class="info-notes">
+          <p>1. Wenn der Netzbezug (orange) auf 0 steht, wird der Strombedarf der Wohnung komplett durch die Solaranlage gedeckt.</p>
+          <p>2. Wenn die blaue Kurve (Produktion Solaranlage) über der grünen Kurve liegt, wird mehr Strom von der Solaranlage produziert, als von der Wohnung abgenommen wird.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Rohdaten (erste 500 Zeilen)</h2>
+        <div class="table-wrap">
+          <table id="dataTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="./app.js?v=20260411-3"></script>
+  </body>
+</html>
