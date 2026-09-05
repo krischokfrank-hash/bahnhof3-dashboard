@@ -29,11 +29,47 @@
             <input id="password" type="password" placeholder="********" />
           </label>
         </div>
-        <div class="actions">
-          <button id="loginBtn">Anmelden</button>
-          <button id="logoutBtn" class="btn-secondary">Abmelden</button>
-          <span id="userInfo" class="status">Nicht angemeldet.</span>
-        </div>
+<div class="actions">
+  <button id="loginBtn">Anmelden</button>
+  <button id="logoutBtn" class="btn-secondary">Abmelden</button>
+  <span id="userInfo" class="status">Nicht angemeldet.</span>
+</div>
+
+<div class="actions">
+  <button id="forgotPasswordBtn" class="btn-secondary">
+    Passwort vergessen?
+  </button>
+</div>
+
+<div id="resetPasswordPanel" style="display: none;">
+  <h3>Neues Passwort setzen</h3>
+
+  <label>
+    Neues Passwort
+    <input
+      id="newPassword"
+      type="password"
+      placeholder="Neues Passwort"
+      autocomplete="new-password"
+    />
+  </label>
+
+  <label>
+    Passwort wiederholen
+    <input
+      id="newPasswordConfirm"
+      type="password"
+      placeholder="Passwort wiederholen"
+      autocomplete="new-password"
+    />
+  </label>
+
+  <div class="actions">
+    <button id="resetPasswordBtn">Passwort ändern</button>
+    <span id="resetPasswordStatus" class="status"></span>
+  </div>
+</div>
+  
       </section>
 
       <section class="panel">

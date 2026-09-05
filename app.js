@@ -20,6 +20,12 @@ const elements = {
   password: document.getElementById("password"),
   loginBtn: document.getElementById("loginBtn"),
   logoutBtn: document.getElementById("logoutBtn"),
+  forgotPasswordBtn: document.getElementById("forgotPasswordBtn"),
+  resetPasswordPanel: document.getElementById("resetPasswordPanel"),
+  newPassword: document.getElementById("newPassword"),
+  newPasswordConfirm: document.getElementById("newPasswordConfirm"),
+  resetPasswordBtn: document.getElementById("resetPasswordBtn"),
+  resetPasswordStatus: document.getElementById("resetPasswordStatus"),
   userInfo: document.getElementById("userInfo"),
   apartmentSelect: document.getElementById("apartmentSelect"),
   yearSelect: document.getElementById("yearSelect"),
@@ -702,6 +708,116 @@ async function loadYearData() {
   elements.loadYearBtn.disabled = false;
 }
 
+async function requestPasswordReset() {
+  try {
+    ensureClient();
+
+    const email = elements.email.value.trim();
+
+    if (!email) {
+      setUserInfo("Bitte zuerst deine E-Mail-Adresse eingeben.", true);
+      elements.email.focus();
+      return;
+    }
+
+    elements.forgotPasswordBtn.disabled = true;
+    setUserInfo("Passwort-Reset wird angefordert...");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://dashboard.xn--grodubrau-energie-7nb.de/"
+    });
+
+    if (error) {
+      setUserInfo(
+        "Passwort-Reset fehlgeschlagen: " + translateAuthError(error),
+        true
+      );
+      return;
+    }
+
+    setUserInfo(
+      "Eine E-Mail zum Zurücksetzen des Passworts wurde gesendet."
+    );
+  } catch (err) {
+    setUserInfo(err.message, true);
+  } finally {
+    elements.forgotPasswordBtn.disabled = false;
+  }
+}
+
+async function updatePassword() {
+  const password = elements.newPassword.value;
+  const passwordConfirm = elements.newPasswordConfirm.value;
+
+  if (!password || !passwordConfirm) {
+    elements.resetPasswordStatus.textContent =
+      "Bitte beide Passwortfelder ausfüllen.";
+    return;
+  }
+
+  if (password !== passwordConfirm) {
+    elements.resetPasswordStatus.textContent =
+      "Die Passwörter stimmen nicht überein.";
+    return;
+  }
+
+  if (password.length < 6) {
+    elements.resetPasswordStatus.textContent =
+      "Das Passwort muss mindestens 6 Zeichen lang sein.";
+    return;
+  }
+
+  elements.resetPasswordBtn.disabled = true;
+  elements.resetPasswordStatus.textContent =
+    "Passwort wird geändert...";
+
+  try {
+    ensureClient();
+
+    const { error } = await supabase.auth.updateUser({
+      password
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    elements.newPassword.value = "";
+    elements.newPasswordConfirm.value = "";
+    elements.resetPasswordPanel.style.display = "none";
+
+    setUserInfo(
+      "Passwort erfolgreich geändert. Du kannst dich jetzt anmelden."
+    );
+  } catch (err) {
+    elements.resetPasswordStatus.textContent =
+      "Passwort konnte nicht geändert werden: " +
+      translateAuthError(err);
+  } finally {
+    elements.resetPasswordBtn.disabled = false;
+  }
+}
+
+function checkPasswordRecovery() {
+  const hash = window.location.hash;
+
+  if (!hash) {
+    return;
+  }
+
+  const params = new URLSearchParams(hash.substring(1));
+
+  if (params.get("type") === "recovery") {
+    elements.resetPasswordPanel.style.display = "block";
+
+    setUserInfo(
+      "Bitte gib jetzt dein neues Passwort ein."
+    );
+
+    elements.newPassword.focus();
+  }
+}
+
 async function login() {
   if (loginInProgress) {
     return;
@@ -817,6 +933,16 @@ async function initSession() {
 
 elements.loginBtn.addEventListener("click", login);
 elements.logoutBtn.addEventListener("click", logout);
+elements.forgotPasswordBtn.addEventListener(
+  "click",
+  requestPasswordReset
+);
+
+elements.resetPasswordBtn.addEventListener(
+  "click",
+  updatePassword
+);
+
 elements.loadYearBtn.addEventListener("click", loadYearData);
 elements.loadBtn.addEventListener("click", loadData);
 elements.password.addEventListener("keydown", (event) => {
@@ -845,3 +971,4 @@ setYearStatus("Bitte anmelden.");
 ensureDefaultDateRange();
 initSession();
 
+checkPasswordRecovery();
